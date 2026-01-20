@@ -1,6 +1,5 @@
 // Next.js Middleware - Route protection and authentication
 import { NextResponse } from 'next/server'
-import { cookies } from 'next/headers'
 
 // Routes that require authentication
 const protectedRoutes = ['/dashboard', '/donors', '/campaigns', '/donations', '/segments', '/workflows', '/tasks']

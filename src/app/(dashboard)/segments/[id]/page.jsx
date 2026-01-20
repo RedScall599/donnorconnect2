@@ -1,9 +1,13 @@
+'use client'
+
 import React from 'react';
+import { use } from 'react';
 
 // Segment detail page
 export default function SegmentDetailPage({ params }) {
   // TODO: Implement segment detail view
-  const segmentId = params.id;
+  const unwrappedParams = use(params)
+  const segmentId = unwrappedParams.id;
   const [segment, setSegment] = React.useState(null);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState(null);

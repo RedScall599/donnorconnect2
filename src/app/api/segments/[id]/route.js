@@ -34,7 +34,7 @@ export async function PATCH(request, { params }) {
     if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
-    const { id } = params
+    const { id } = await params
     const data = await request.json()
     // Optionally: validate data here (e.g., with Zod)
     const { prisma } = await import('@/lib/db')

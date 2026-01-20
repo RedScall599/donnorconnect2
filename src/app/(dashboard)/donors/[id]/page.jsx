@@ -1,11 +1,13 @@
 'use client'
 
 import { use } from 'react'
+import React from 'react'
 
 // Donor detail page
 export default function DonorDetailPage({ params }) {
   // TODO: Get donor ID from params using use() hook
-  const donorId = params.id;
+  const unwrappedParams = use(params)
+  const donorId = unwrappedParams.id;
 
   // TODO: Fetch donor data with useDonor hook
   const [donor, setDonor] = React.useState(null);

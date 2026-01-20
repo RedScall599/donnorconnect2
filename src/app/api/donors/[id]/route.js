@@ -12,7 +12,7 @@ export async function GET(request, { params }) {
     }
 
     // TODO: Get donor ID from params (await params)
-    const { id } = params
+    const { id } = await params
 
     // TODO: Query single donor with related data
     const { prisma } = await import('@/lib/db')
@@ -48,7 +48,7 @@ export async function PATCH(request, { params }) {
     }
 
     // TODO: Get donor ID from params (await params)
-    const { id } = params
+    const { id } = await params
 
     // TODO: Parse and validate request body
     const data = await request.json()
@@ -85,7 +85,7 @@ export async function DELETE(request, { params }) {
     }
 
     // TODO: Get donor ID from params (await params)
-    const { id } = params
+    const { id } = await params
 
     // TODO: Delete donor from database
     const { prisma } = await import('@/lib/db')

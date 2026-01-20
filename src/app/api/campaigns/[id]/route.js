@@ -10,7 +10,7 @@ export async function GET(request, { params }) {
     if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
-    const { id } = params
+    const { id } = await params
     const { prisma } = await import('@/lib/db')
     const campaign = await prisma.campaign.findUnique({
       where: { id, organizationId: session.user.organizationId }
@@ -34,7 +34,7 @@ export async function PATCH(request, { params }) {
     if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
-    const { id } = params
+    const { id } = await params
     const data = await request.json()
     // Optionally: validate data here (e.g., with Zod)
     const { prisma } = await import('@/lib/db')
@@ -61,7 +61,7 @@ export async function DELETE(request, { params }) {
     if (session.user.role !== 'ADMIN') {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
-    const { id } = params
+    const { id } = await params
     const { prisma } = await import('@/lib/db')
     await prisma.campaign.delete({
       where: { id, organizationId: session.user.organizationId }
