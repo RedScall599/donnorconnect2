@@ -552,6 +552,72 @@ async function main() {
   ])
   console.log(`✅ Created ${segments.length} segments`)
 
+  // Populate segment members based on segment rules
+  console.log('👥 Populating segment members...')
+  let segmentMemberCount = 0
+  
+  // First-Time Donors (totalGifts === 1)
+  const firstTimeDonors = await prisma.donor.findMany({
+    where: { organizationId: org1.id, totalGifts: 1 }
+  })
+  for (const donor of firstTimeDonors) {
+    await prisma.segmentMember.create({
+      data: { segmentId: segments[0].id, donorId: donor.id }
+    })
+    segmentMemberCount++
+  }
+  await prisma.segment.update({
+    where: { id: segments[0].id },
+    data: { memberCount: firstTimeDonors.length }
+  })
+
+  // High-Risk Retention (HIGH or CRITICAL risk)
+  const highRiskDonors = await prisma.donor.findMany({
+    where: { organizationId: org1.id, retentionRisk: { in: ['HIGH', 'CRITICAL'] } }
+  })
+  for (const donor of highRiskDonors) {
+    await prisma.segmentMember.create({
+      data: { segmentId: segments[1].id, donorId: donor.id }
+    })
+    segmentMemberCount++
+  }
+  await prisma.segment.update({
+    where: { id: segments[1].id },
+    data: { memberCount: highRiskDonors.length }
+  })
+
+  // Major Donors (totalAmount >= 1000)
+  const majorDonors = await prisma.donor.findMany({
+    where: { organizationId: org1.id, totalAmount: { gte: 1000 } }
+  })
+  for (const donor of majorDonors) {
+    await prisma.segmentMember.create({
+      data: { segmentId: segments[2].id, donorId: donor.id }
+    })
+    segmentMemberCount++
+  }
+  await prisma.segment.update({
+    where: { id: segments[2].id },
+    data: { memberCount: majorDonors.length }
+  })
+
+  // Lapsed Donors (status === LAPSED)
+  const lapsedDonors = await prisma.donor.findMany({
+    where: { organizationId: org1.id, status: 'LAPSED' }
+  })
+  for (const donor of lapsedDonors) {
+    await prisma.segmentMember.create({
+      data: { segmentId: segments[3].id, donorId: donor.id }
+    })
+    segmentMemberCount++
+  }
+  await prisma.segment.update({
+    where: { id: segments[3].id },
+    data: { memberCount: lapsedDonors.length }
+  })
+
+  console.log(`✅ Created ${segmentMemberCount} segment member relationships`)
+
   // Create Workflows
   console.log('⚙️ Creating workflows...')
   const workflows = await Promise.all([

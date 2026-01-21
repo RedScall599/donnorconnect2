@@ -11,8 +11,13 @@ export async function GET(request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
     const { prisma } = await import('@/lib/db')
+    
+    // Get Hope Foundation org for demo data
+    const demoOrg = await prisma.organization.findFirst({ where: { name: 'Hope Foundation' } })
+    const orgId = demoOrg?.id || session.user.organizationId
+    
     const segments = await prisma.segment.findMany({
-      where: { organizationId: session.user.organizationId },
+      where: { organizationId: orgId },
       orderBy: { createdAt: 'desc' }
     })
     return NextResponse.json({ segments })
