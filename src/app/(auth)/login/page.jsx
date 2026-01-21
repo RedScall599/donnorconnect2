@@ -43,6 +43,7 @@ export default function LoginPage() {
         // Show success confirmation then redirect
         setSuccess('Successful login')
         const next = searchParams.get('next') || '/home'
+        router.refresh() // Refresh server components to update session
         setTimeout(() => router.push(next), 800)
       }
     } catch (err) {

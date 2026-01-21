@@ -12,7 +12,36 @@ export default function DonorsPage() {
   const [search, setSearch] = React.useState('');
   const [page, setPage] = React.useState(1);
   const [statusFilter, setStatusFilter] = React.useState('');
+  const [userRole, setUserRole] = React.useState(null);
   const { donors, loading, error, totalPages } = useDonors(page, 20, { search, status: statusFilter });
+
+  // Fetch user role to check if admin
+  React.useEffect(() => {
+    async function fetchUserRole() {
+      try {
+        const res = await fetch('/api/auth/session');
+        if (res.ok) {
+          const data = await res.json();
+          setUserRole(data.user?.role);
+        }
+      } catch (err) {
+        console.error('Failed to fetch user role:', err);
+      }
+    }
+    fetchUserRole();
+  }, []);
+
+  // Block access for non-admins
+  if (userRole !== null && userRole !== 'ADMIN') {
+    return (
+      <div className="space-y-6">
+        <div className="text-center py-12">
+          <h1 className="text-3xl font-bold text-red-600">Access Denied</h1>
+          <p className="text-gray-600 mt-4">Only administrators can access the donors page.</p>
+        </div>
+      </div>
+    );
+  }
 
   // TODO: Implement donors list with search, filtering, and pagination
 
@@ -73,7 +102,7 @@ export default function DonorsPage() {
             <thead>
               <tr>
                 <th className="border px-2 py-1">Name</th>
-                <th className="border px-2 py-1">Email</th>
+                {userRole === 'ADMIN' && <th className="border px-2 py-1">Email</th>}
                 <th className="border px-2 py-1">Status</th>
                 <th className="border px-2 py-1">Total Gifts</th>
                 <th className="border px-2 py-1">Total Amount</th>
@@ -90,7 +119,7 @@ export default function DonorsPage() {
                         {[donor.firstName, donor.lastName].filter(Boolean).join(' ') || 'Unknown'}
                       </Link>
                     </td>
-                    <td className="border px-2 py-1">{donor.email}</td>
+                    {userRole === 'ADMIN' && <td className="border px-2 py-1">{donor.email}</td>}
                     <td className="border px-2 py-1">{donor.status}</td>
                     <td className="border px-2 py-1">{donor.totalGifts ?? 'N/A'}</td>
                     <td className="border px-2 py-1">${donor.totalAmount ?? 'N/A'}</td>

@@ -9,12 +9,29 @@ export default function DonationsPage() {
   const [donations, setDonations] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState(null);
+  const [userRole, setUserRole] = React.useState(null);
   const router = useRouter();
   const searchParams = useSearchParams()
   const createdFlag = searchParams?.get?.('created')
 
   // Donor summary
   const { donors, loading: donorsLoading, error: donorsError, refetch: refetchDonors } = useDonors(1, 50)
+
+  // Fetch user role
+  React.useEffect(() => {
+    async function fetchUserRole() {
+      try {
+        const res = await fetch('/api/auth/session');
+        if (res.ok) {
+          const data = await res.json();
+          setUserRole(data.user?.role);
+        }
+      } catch (err) {
+        console.error('Failed to fetch user role:', err);
+      }
+    }
+    fetchUserRole();
+  }, []);
 
   React.useEffect(() => {
     async function fetchDonations() {
@@ -67,11 +84,11 @@ export default function DonationsPage() {
             <thead>
               <tr>
                 <th className="border px-2 py-1">Name</th>
-                <th className="border px-2 py-1">Email</th>
+                {userRole === 'ADMIN' && <th className="border px-2 py-1">Email</th>}
                 <th className="border px-2 py-1">Total Gifts</th>
                 <th className="border px-2 py-1">Total Amount</th>
-                <th className="border px-2 py-1">Risk Level</th>
-                <th className="border px-2 py-1">Actions</th>
+                {userRole === 'ADMIN' && <th className="border px-2 py-1">Risk Level</th>}
+                {userRole === 'ADMIN' && <th className="border px-2 py-1">Actions</th>}
               </tr>
             </thead>
             <tbody>
@@ -80,11 +97,12 @@ export default function DonationsPage() {
                   <td className="border px-2 py-1 font-medium">
                     <Link href={`/donors/${d.id}`}>{[d.firstName, d.lastName].filter(Boolean).join(' ') || 'Unknown'}</Link>
                   </td>
-                  <td className="border px-2 py-1">{d.email || '—'}</td>
+                  {userRole === 'ADMIN' && <td className="border px-2 py-1">{d.email || '—'}</td>}
                   <td className="border px-2 py-1">{d.totalGifts ?? 0}</td>
                   <td className="border px-2 py-1">${d.totalAmount ?? 0}</td>
-                  <td className="border px-2 py-1">{d.retentionRisk ?? 'N/A'}</td>
-                  <td className="border px-2 py-1">
+                  {userRole === 'ADMIN' && <td className="border px-2 py-1">{d.retentionRisk ?? 'N/A'}</td>}
+                  {userRole === 'ADMIN' && (
+                    <td className="border px-2 py-1">
                     <Link href={`/donors/${d.id}/edit`} className="font-medium transition-colors" style={{ color: 'hsl(var(--primary))' }}>Edit</Link>
                     <span className="mx-2" style={{ color: 'hsl(var(--border))' }}>|</span>
                     <button
@@ -101,46 +119,14 @@ export default function DonationsPage() {
                         }
                       }}
                     >Delete</button>
-                  </td>
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>
           </table>
         )}
       </div>
-      {!loading && !error && (
-        <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: 16 }}>
-          <thead>
-            <tr>
-              <th style={{ border: '1px solid #ccc', padding: 8 }}>Donor</th>
-              <th style={{ border: '1px solid #ccc', padding: 8 }}>Amount</th>
-              <th style={{ border: '1px solid #ccc', padding: 8 }}>Date</th>
-              <th style={{ border: '1px solid #ccc', padding: 8 }}>Type</th>
-            </tr>
-          </thead>
-          <tbody>
-            {donations.length === 0 ? (
-              <tr>
-                <td colSpan={4} style={{ textAlign: 'center', padding: 16 }}>
-                  No donations found.{' '}
-                  <Link href="/donations/new" style={{ color: '#2563eb' }}>Record one now</Link>
-                </td>
-              </tr>
-            ) : (
-              donations.map((donation) => (
-                <tr key={donation.id}>
-                  <td style={{ border: '1px solid #ccc', padding: 8 }}>
-                    {([donation.donor?.firstName, donation.donor?.lastName].filter(Boolean).join(' ')) || 'Unknown'}
-                  </td>
-                  <td style={{ border: '1px solid #ccc', padding: 8 }}>${donation.amount}</td>
-                  <td style={{ border: '1px solid #ccc', padding: 8 }}>{donation.date ? new Date(donation.date).toLocaleDateString() : ''}</td>
-                  <td style={{ border: '1px solid #ccc', padding: 8 }}>{donation.type || ''}</td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      )}
     </div>
   );
 }

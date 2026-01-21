@@ -1,24 +1,46 @@
 "use client"
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 
 export default function SiteHeader({ userEmail }) {
   const [open, setOpen] = useState(false)
+  const [userRole, setUserRole] = useState(null)
 
-  const links = [
+  // Fetch user role
+  useEffect(() => {
+    async function fetchUserRole() {
+      try {
+        const res = await fetch('/api/auth/session');
+        if (res.ok) {
+          const data = await res.json();
+          setUserRole(data.user?.role);
+        }
+      } catch (err) {
+        console.error('Failed to fetch user role:', err);
+      }
+    }
+    if (userEmail) {
+      fetchUserRole();
+    }
+  }, [userEmail]);
+
+  const allLinks = [
     { name: 'Home', href: '/home' },
     { name: 'About', href: '/about' },
     { name: 'Why DonorConnect', href: '/why-donorconnect' },
     { name: 'Dashboard', href: '/dashboard' },
-    { name: 'Donors', href: '/donors' },
+    { name: 'Donors', href: '/donors', adminOnly: true },
     { name: 'Donations', href: '/donations' },
     { name: 'Campaigns', href: '/campaigns' },
-    { name: 'Segments', href: '/segments' },
-    { name: 'Tasks', href: '/tasks' },
+    { name: 'Segments', href: '/segments', adminOnly: true },
+    { name: 'Tasks', href: '/tasks', adminOnly: true },
     { name: 'AI Policy', href: '/ai-policy' },
-    { name: 'Evidence', href: '/evidence' },
-    { name: 'Reflection', href: '/reflection' },
+    { name: 'Evidence', href: '/evidence', adminOnly: true },
+    { name: 'Reflection', href: '/reflection', adminOnly: true },
   ]
+
+  // Filter links based on user role
+  const links = allLinks.filter(link => !link.adminOnly || userRole === 'ADMIN')
 
   return (
     <header className="sticky top-0 z-50 border-b-4 border-accent/30" style={{ background: 'linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--soft-terracotta)) 100%)', boxShadow: '0 4px 20px rgba(139, 69, 19, 0.2)' }}>

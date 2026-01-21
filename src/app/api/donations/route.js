@@ -25,15 +25,18 @@ export async function GET(request) {
     const take = pageSize
 
     const { prisma } = await import('@/lib/db')
+    // Get Hope Foundation org for sample data
+    const demoOrg = await prisma.organization.findFirst({ where: { name: 'Hope Foundation' } })
+    const orgId = demoOrg?.id || session.user.organizationId
     const [donations, total] = await Promise.all([
       prisma.donation.findMany({
-        where: { donor: { organizationId: session.user.organizationId } },
+        where: { donor: { organizationId: orgId } },
         skip,
         take,
         orderBy: { createdAt: 'desc' },
         include: { donor: true, campaign: true }
       }),
-      prisma.donation.count({ where: { donor: { organizationId: session.user.organizationId } } })
+      prisma.donation.count({ where: { donor: { organizationId: orgId } } })
     ])
 
     // TODO: Return donations list
@@ -71,19 +74,49 @@ export async function POST(request) {
     const input = parsed.data
     const { prisma } = await import('@/lib/db')
 
-    // Enforce donor belongs to user's organization
-    const donor = await prisma.donor.findFirst({
-      where: { id: input.donorId, organizationId: session.user.organizationId }
-    })
+    // Get Hope Foundation org for demo data consistency
+    const demoOrg = await prisma.organization.findFirst({ where: { name: 'Hope Foundation' } })
+    const orgId = demoOrg?.id || session.user.organizationId
+
+    // Find or create donor by first/last name
+    let donor
+    if (input.firstName && input.lastName) {
+      // Try to find existing donor with this name
+      donor = await prisma.donor.findFirst({
+        where: { 
+          firstName: input.firstName,
+          lastName: input.lastName,
+          organizationId: orgId 
+        }
+      })
+      
+      // If not found, create new donor
+      if (!donor) {
+        donor = await prisma.donor.create({
+          data: {
+            firstName: input.firstName,
+            lastName: input.lastName,
+            organizationId: orgId,
+            status: 'ACTIVE'
+          }
+        })
+      }
+    } else if (input.donorId) {
+      // Fallback to donorId if provided (for backward compatibility)
+      donor = await prisma.donor.findFirst({
+        where: { id: input.donorId, organizationId: orgId }
+      })
+    }
+    
     if (!donor) {
-      return NextResponse.json({ error: 'Invalid donor for organization' }, { status: 400 })
+      return NextResponse.json({ error: 'Invalid donor information' }, { status: 400 })
     }
 
     // If campaignId provided, ensure campaign belongs to org
     let campaignId = input.campaignId ?? null
     if (campaignId) {
       const campaign = await prisma.campaign.findFirst({
-        where: { id: campaignId, organizationId: session.user.organizationId },
+        where: { id: campaignId, organizationId: donor.organizationId },
         select: { id: true }
       })
       if (!campaign) {

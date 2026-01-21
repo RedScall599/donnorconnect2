@@ -8,7 +8,9 @@ export async function GET(request) {
     if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
     const { prisma } = await import('@/lib/db')
-    const orgId = session.user.organizationId
+    // Get Hope Foundation org for sample data
+    const demoOrg = await prisma.organization.findFirst({ where: { name: 'Hope Foundation' } })
+    const orgId = demoOrg?.id || session.user.organizationId
 
     // Fetch counts and totals
     const [totalDonors, totalDonations, totalAmount, atRiskDonors] = await Promise.all([
@@ -22,15 +24,29 @@ export async function GET(request) {
     const donorsWithMultiple = await prisma.donor.count({ where: { organizationId: orgId, totalGifts: { gte: 2 } } })
     const retentionRate = totalDonors > 0 ? donorsWithMultiple / totalDonors : 0
 
-    // Optional: return small retention history (last 12 months) — placeholder calculation
-    const retentionHistory = []
+    // Calculate donation amounts by month (last 12 months)
+    const donationHistory = []
     const labels = []
     const now = new Date()
+    
     for (let i = 11; i >= 0; i--) {
-      const d = new Date(now.getFullYear(), now.getMonth() - i, 1)
-      labels.push(d.toLocaleString('default', { month: 'short' }))
-      // Placeholder: use retentionRate as flat series for now
-      retentionHistory.push(retentionRate)
+      const startDate = new Date(now.getFullYear(), now.getMonth() - i, 1)
+      const endDate = new Date(now.getFullYear(), now.getMonth() - i + 1, 0, 23, 59, 59)
+      labels.push(startDate.toLocaleString('default', { month: 'short' }))
+      
+      // Get total donation amount for this month
+      const monthTotal = await prisma.donation.aggregate({
+        where: {
+          donor: { organizationId: orgId },
+          date: {
+            gte: startDate,
+            lte: endDate
+          }
+        },
+        _sum: { amount: true }
+      })
+      
+      donationHistory.push(monthTotal._sum.amount || 0)
     }
 
     return NextResponse.json({
@@ -39,7 +55,7 @@ export async function GET(request) {
       totalAmount,
       atRiskDonors,
       retentionRate,
-      retentionHistory,
+      donationHistory,
       labels
     })
   } catch (err) {

@@ -23,8 +23,11 @@ export async function GET(request) {
 
     // Query donors with filtering and pagination
     const { prisma } = await import('@/lib/db')
+    // Get Hope Foundation org for sample data
+    const demoOrg = await prisma.organization.findFirst({ where: { name: 'Hope Foundation' } })
+    const orgId = demoOrg?.id || session.user.organizationId
     const where = {
-      organizationId: session.user.organizationId,
+      organizationId: orgId,
       ...(search
         ? {
             OR: [

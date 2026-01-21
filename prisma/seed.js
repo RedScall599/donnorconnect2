@@ -161,11 +161,11 @@ async function main() {
     // Org 1 campaigns
     prisma.campaign.create({
       data: {
-        name: 'Annual Fund 2024',
+        name: 'Annual Fund 2025',
         description: 'Year-end annual fund drive',
         goal: 100000,
-        startDate: new Date('2024-10-01'),
-        endDate: new Date('2024-12-31'),
+        startDate: new Date('2025-10-01'),
+        endDate: new Date('2025-12-31'),
         type: 'Annual Fund',
         status: 'ACTIVE',
         organizationId: org1.id
@@ -312,7 +312,8 @@ async function main() {
     const donor = donors[i]
     const amount = Math.floor(Math.random() * 400) + 50
     const date = randomDate(sixtyDays, sixMonths)
-    const campaign = campaigns.find(c => c.organizationId === donor.organizationId)
+    const orgCampaigns = campaigns.filter(c => c.organizationId === donor.organizationId)
+    const campaign = randomItem(orgCampaigns)
 
     await prisma.donation.create({
       data: {
@@ -343,16 +344,17 @@ async function main() {
   const twoGiftEnd = Math.floor(donors.length * 0.7)
   for (let i = twoGiftStart; i < twoGiftEnd; i++) {
     const donor = donors[i]
-    const campaign = campaigns.find(c => c.organizationId === donor.organizationId)
+    const orgCampaigns = campaigns.filter(c => c.organizationId === donor.organizationId)
 
     // First donation (older)
     const amount1 = Math.floor(Math.random() * 300) + 50
     const date1 = randomDate(sixMonths, twelveMonths)
+    const campaign1 = randomItem(orgCampaigns)
 
     await prisma.donation.create({
       data: {
         donorId: donor.id,
-        campaignId: campaign?.id,
+        campaignId: campaign1?.id,
         amount: amount1,
         date: date1,
         type: 'ONE_TIME',
@@ -363,11 +365,12 @@ async function main() {
     // Second donation (recent)
     const amount2 = Math.floor(Math.random() * 300) + 50
     const date2 = randomDate(twoMonths, oneMonth)
+    const campaign2 = randomItem(orgCampaigns)
 
     await prisma.donation.create({
       data: {
         donorId: donor.id,
-        campaignId: campaign?.id,
+        campaignId: campaign2?.id,
         amount: amount2,
         date: date2,
         type: 'ONE_TIME',
@@ -393,7 +396,7 @@ async function main() {
   const loyalEnd = Math.floor(donors.length * 0.9)
   for (let i = loyalStart; i < loyalEnd; i++) {
     const donor = donors[i]
-    const campaign = campaigns.find(c => c.organizationId === donor.organizationId)
+    const orgCampaigns = campaigns.filter(c => c.organizationId === donor.organizationId)
     const numDonations = Math.floor(Math.random() * 4) + 3 // 3-6 donations
 
     let totalAmount = 0
@@ -405,6 +408,7 @@ async function main() {
       const monthsAgo = Math.floor(Math.random() * 12) + 1
       const date = new Date(now)
       date.setMonth(date.getMonth() - monthsAgo)
+      const campaign = randomItem(orgCampaigns)
 
       await prisma.donation.create({
         data: {
@@ -439,7 +443,8 @@ async function main() {
   const lapsedStart = Math.floor(donors.length * 0.9)
   for (let i = lapsedStart; i < donors.length; i++) {
     const donor = donors[i]
-    const campaign = campaigns.find(c => c.organizationId === donor.organizationId)
+    const orgCampaigns = campaigns.filter(c => c.organizationId === donor.organizationId)
+    const campaign = randomItem(orgCampaigns)
 
     const amount = Math.floor(Math.random() * 500) + 100
     const date = randomDate(twelveMonths, eighteenMonths)

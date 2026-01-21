@@ -8,7 +8,9 @@ export async function GET(request) {
     if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
     const { prisma } = await import('@/lib/db')
-    const orgId = session.user.organizationId
+    // Get Hope Foundation org for sample data
+    const demoOrg = await prisma.organization.findFirst({ where: { name: 'Hope Foundation' } })
+    const orgId = demoOrg?.id || session.user.organizationId
 
     const recent = await prisma.donation.findMany({
       where: { donor: { organizationId: orgId } },

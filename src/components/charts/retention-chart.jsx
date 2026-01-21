@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react'
 
 // Lightweight inline SVG line/area chart for retention rate over time.
-// Expects data as decimals (e.g., 0.62 for 62%).
+// Expects data as decimals (e.g., 0.62 for 62%) or amounts.
 // Optional labels array for X axis (e.g., month names).
 export default function RetentionChart({
   data = [],
@@ -11,7 +11,9 @@ export default function RetentionChart({
   height = 160,
   stroke = '#2563eb',
   fill = 'rgba(37, 99, 235, 0.15)',
-  seriesLabel = 'Monthly retention rate'
+  seriesLabel = 'Monthly retention rate',
+  formatValue = null, // Function to format values (e.g., for $ amounts)
+  yTickValues = null // Custom Y-axis tick values (e.g., [0, 100, 500, 1000, 2000])
 }) {
   if (!Array.isArray(data) || data.length === 0) {
     return <div className="h-40 bg-gray-100 rounded flex items-center justify-center text-gray-400">No data</div>
@@ -22,7 +24,7 @@ export default function RetentionChart({
   const max = Math.max(...data, 1)
   const min = Math.min(...data, 0)
   const padX = 24
-  const padY = 16
+  const padY = 24
   const innerW = width - padX * 2
   const innerH = h - padY * 2
   const stepX = innerW / (data.length - 1)
@@ -36,10 +38,23 @@ export default function RetentionChart({
   const pathD = points.map(([x, y], i) => (i === 0 ? `M ${x} ${y}` : `L ${x} ${y}`)).join(' ')
   const areaD = `${pathD} L ${padX + innerW} ${padY + innerH} L ${padX} ${padY + innerH} Z`
 
-  const yTicks = [0, 0.25, 0.5, 0.75, 1].map(t => ({
-    y: padY + (1 - t) * innerH,
-    label: `${Math.round(100 * (min + (max - min) * t))}%`
-  }))
+  const yTicks = useMemo(() => {
+    if (yTickValues) {
+      // Use custom tick values
+      return yTickValues.map(value => ({
+        y: padY + (1 - normalize(value, min, max)) * innerH,
+        label: formatValue ? formatValue(value) : `${value}`
+      }))
+    }
+    // Default: 5 evenly spaced ticks
+    return [0, 0.25, 0.5, 0.75, 1].map(t => {
+      const value = min + (max - min) * t
+      return {
+        y: padY + (1 - t) * innerH,
+        label: formatValue ? formatValue(value) : `${Math.round(100 * value)}%`
+      }
+    })
+  }, [yTickValues, formatValue, min, max, padY, innerH])
 
   const xTicks = useMemo(() => {
     const out = []
@@ -61,7 +76,7 @@ export default function RetentionChart({
   function onLeave() { setHover(null) }
 
   return (
-    <svg viewBox={`0 0 ${width} ${h}`} className="w-full h-40" role="img" aria-label={seriesLabel}
+    <svg viewBox={`0 0 ${width} ${h}`} className="w-full h-full" role="img" aria-label={seriesLabel}
       onMouseMove={onMove} onMouseLeave={onLeave}
     >
       {/* Grid lines */}
@@ -103,7 +118,7 @@ export default function RetentionChart({
           <circle cx={hover.x} cy={hover.y} r="4.5" fill="#fff" stroke={stroke} strokeWidth="2" />
           <Tooltip x={Math.min(hover.x + 8, padX + innerW - 100)} y={padY + 8}
                    title={labels[hover.i] ?? `Point ${hover.i + 1}`}
-                   value={`${Math.round(data[hover.i] * 100)}%`} />
+                   value={formatValue ? formatValue(data[hover.i]) : `${Math.round(data[hover.i] * 100)}%`} />
         </g>
       )}
     </svg>

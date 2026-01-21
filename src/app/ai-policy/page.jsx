@@ -2,23 +2,23 @@ import React from 'react'
 
 export default function AIPolicyPage() {
   return (
-    <div className="max-w-3xl mx-auto py-12">
+    <div className="max-w-3xl mx-auto py-12 px-4">
       <h1 className="text-3xl font-bold">AI Policy</h1>
       <p className="mt-4 text-gray-700">This page describes how DonorConnect uses AI responsibly.</p>
 
       <section className="mt-8">
         <h2 className="text-xl font-semibold">AI-powered Features</h2>
-        <p className="mt-2 text-gray-600">DonorConnect uses AI to provide donation risk scoring and donor-summary suggestions to help nonprofit staff prioritize outreach and improve donor retention.</p>
+        <p className="mt-2 text-gray-600 text-base">DonorConnect uses AI to provide donation risk scoring and donor-summary suggestions to help nonprofit staff prioritize outreach and improve donor retention.</p>
       </section>
 
       <section className="mt-6">
         <h2 className="text-xl font-semibold">AI APIs and Model</h2>
-        <p className="mt-2 text-gray-600">We use a hosted AI API to generate risk scores and donor messaging suggestions. The model used is GPT-5 mini via provider API (developer-managed keys). The model choice is documented here for transparency and auditability.</p>
+        <p className="mt-2 text-gray-600 text-base">We use a hosted AI API to generate risk scores and donor messaging suggestions. The model used is GPT-5 mini via provider API (developer-managed keys). The model choice is documented here for transparency and auditability.</p>
       </section>
 
       <section className="mt-6">
         <h2 className="text-xl font-semibold">How We Use AI Responsibly</h2>
-        <ul className="list-disc list-inside mt-2 text-gray-600">
+        <ul className="list-disc list-inside mt-2 text-gray-600 text-base">
           <li>Human-in-the-loop: AI suggestions are presented as recommendations; staff make final decisions.</li>
           <li>Data minimization: We only send necessary donor attributes (e.g., donation history summary, anonymized engagement signals) to the AI API — not full PII unless explicitly allowed by the organization.</li>
           <li>Consent & access control: AI features are available only to authenticated users within the organization. Admins can toggle AI features.</li>
@@ -37,7 +37,7 @@ export default function AIPolicyPage() {
         </ol>
 
         <p className="mt-2 text-gray-600">Example prompt (simplified):</p>
-        <pre className="bg-gray-100 p-3 rounded text-sm mt-2">{`Given donor summary: { totalGifts: 3, totalAmount: 230, lastGiftDate: '2025-11-02', engagement: 'low' }, provide a risk: LOW|MEDIUM|HIGH and one short recommended action in JSON: {"risk": "LOW", "recommendation": "Send personalized thank-you email this week."}`}</pre>
+        <pre className="bg-gray-100 p-3 rounded mt-2 whitespace-pre-wrap break-words overflow-x-auto text-gray-600">{`Given donor summary: { totalGifts: 3, totalAmount: 230, lastGiftDate: '2025-11-02', engagement: 'low' }, provide a risk: LOW|MEDIUM|HIGH and one short recommended action in JSON: {"risk": "LOW", "recommendation": "Send personalized thank-you email this week."}`}</pre>
       </section>
 
       <section className="mt-6">

@@ -1,27 +1,32 @@
 "use client"
 import { useEffect, useState } from 'react'
+import Link from 'next/link'
 import RetentionChart from '@/components/charts/retention-chart'
 
 export default function DashboardPage() {
   const [metrics, setMetrics] = useState(null)
   const [error, setError] = useState(null)
   const [recent, setRecent] = useState([])
+  const [userRole, setUserRole] = useState(null)
 
   useEffect(() => {
     let mounted = true
     async function load() {
       try {
-        const [sRes, rRes] = await Promise.all([
+        const [sRes, rRes, uRes] = await Promise.all([
           fetch('/api/dashboard/summary'),
-          fetch('/api/activity/recent')
+          fetch('/api/activity/recent'),
+          fetch('/api/auth/session')
         ])
         const sData = await sRes.json()
         const rData = await rRes.json()
+        const uData = await uRes.json()
         if (!sRes.ok) throw new Error(sData.error || 'Failed to load summary')
         if (!rRes.ok) console.warn('Recent activity load warning:', rData.error)
         if (mounted) {
           setMetrics(sData)
           setRecent(rData.recent || [])
+          setUserRole(uData.user?.role)
         }
       } catch (err) {
         console.error(err)
@@ -41,11 +46,21 @@ export default function DashboardPage() {
   return (
     <div className="space-y-8 pb-16 lg:pb-0">
       <div className="card">
-        <h1 className="text-5xl font-bold mb-3" style={{ background: 'linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Dashboard</h1>
-        <p className="text-lg" style={{ color: 'hsl(var(--foreground))' }}>Core metrics and recent activity to track your donor retention efforts</p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-5xl font-bold mb-3" style={{ background: 'linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Dashboard</h1>
+            <p className="text-lg" style={{ color: 'hsl(var(--foreground))' }}>Core metrics and recent activity to track your donor retention efforts</p>
+          </div>
+          {userRole !== 'ADMIN' && (
+            <Link href="/donations/new" className="px-6 py-3 rounded-lg font-semibold text-base transition-all hover:-translate-y-0.5 flex items-center gap-2" style={{ background: 'linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)))', color: 'hsl(var(--warm-ivory))', boxShadow: '0 4px 12px rgba(139, 69, 19, 0.3)' }}>
+              <span className="text-xl">💝</span>
+              Make a Donation
+            </Link>
+          )}
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className={`grid grid-cols-1 sm:grid-cols-2 ${userRole === 'ADMIN' ? 'lg:grid-cols-4' : 'lg:grid-cols-3'} gap-6`}>
         <div className="card text-center">
           <div className="text-lg font-semibold mb-3" style={{ color: 'hsl(var(--primary))' }}>Total Donors</div>
           <div className="text-4xl font-bold" style={{ color: 'hsl(var(--accent))' }}>{metrics.totalDonors}</div>
@@ -54,10 +69,12 @@ export default function DashboardPage() {
           <div className="text-lg font-semibold mb-3" style={{ color: 'hsl(var(--primary))' }}>Total Donations</div>
           <div className="text-4xl font-bold" style={{ color: 'hsl(var(--accent))' }}>{metrics.totalDonations}</div>
         </div>
-        <div className="card text-center">
-          <div className="text-lg font-semibold mb-3" style={{ color: 'hsl(var(--primary))' }}>At-Risk Donors</div>
-          <div className="text-4xl font-bold" style={{ color: 'hsl(var(--secondary))' }}>{metrics.atRiskDonors}</div>
-        </div>
+        {userRole === 'ADMIN' && (
+          <div className="card text-center">
+            <div className="text-lg font-semibold mb-3" style={{ color: 'hsl(var(--primary))' }}>At-Risk Donors</div>
+            <div className="text-4xl font-bold" style={{ color: 'hsl(var(--secondary))' }}>{metrics.atRiskDonors}</div>
+          </div>
+        )}
         <div className="card text-center">
           <div className="text-lg font-semibold mb-3" style={{ color: 'hsl(var(--primary))' }}>Total Raised</div>
           <div className="text-4xl font-bold" style={{ color: 'hsl(var(--muted-gold))' }}>${metrics.totalAmount?.toLocaleString?.() ?? 0}</div>
@@ -66,12 +83,21 @@ export default function DashboardPage() {
 
       <div className="card">
         <div className="flex items-end justify-between mb-4">
-          <div className="text-2xl font-bold" style={{ color: 'hsl(var(--primary))' }}>Retention Rate</div>
-          <div className="text-5xl font-bold" style={{ color: 'hsl(var(--accent))' }}>{(metrics.retentionRate * 100).toFixed(1)}%</div>
+          <div className="text-2xl font-bold" style={{ color: 'hsl(var(--primary))' }}>Monthly Donations</div>
+          <div className="text-5xl font-bold" style={{ color: 'hsl(var(--accent))' }}>${(metrics.donationHistory?.[11] || 0).toLocaleString()}</div>
         </div>
-        <p className="text-base mb-6" style={{ color: 'hsl(var(--foreground))' }}>Monthly donor retention over the last 12 months</p>
-        <div className="p-4 rounded-xl" style={{ background: 'hsl(var(--cream-beige))' }}>
-          <RetentionChart data={metrics.retentionHistory} labels={metrics.labels} seriesLabel="Monthly retention rate" />
+        <p className="text-base mb-6" style={{ color: 'hsl(var(--foreground))' }}>Total donation amounts received over the last 12 months</p>
+        <div className="p-6 rounded-xl" style={{ background: 'hsl(var(--cream-beige))' }}>
+          <div className="h-64">
+            <RetentionChart 
+              data={metrics.donationHistory} 
+              labels={metrics.labels} 
+              seriesLabel="Monthly donation amount ($)"
+              formatValue={(val) => `$${Math.round(val).toLocaleString()}`}
+              yTickValues={[0, 500, 1000, 1500, 2000, 3000]}
+              height={220}
+            />
+          </div>
         </div>
       </div>
 
@@ -87,7 +113,7 @@ export default function DashboardPage() {
                   <div className="font-semibold text-base">
                     <a href={`/donors/${item.donorId}`} className="activity-link">{item.donorName}</a>
                   </div>
-                  <div className="text-sm mt-1" style={{ color: 'hsl(var(--foreground))' }}>{item.donorEmail}</div>
+                  {userRole === 'ADMIN' && <div className="text-sm mt-1" style={{ color: 'hsl(var(--foreground))' }}>{item.donorEmail}</div>}
                 </div>
                 <div className="text-right">
                   <div className="font-bold text-lg" style={{ color: 'hsl(var(--secondary))' }}>${item.amount.toFixed(2)}</div>

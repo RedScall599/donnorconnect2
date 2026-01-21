@@ -19,22 +19,44 @@ export async function GET(request) {
     const skip = (page - 1) * pageSize
     const take = pageSize
 
-    // Query campaigns for organization; if empty, auto-seed defaults for this org
-    let { campaigns, total } = await listCampaigns({
-      organizationId: session.user.organizationId,
+    // Get Hope Foundation org for sample data
+    const { prisma } = await import('@/lib/db')
+    const demoOrg = await prisma.organization.findFirst({ where: { name: 'Hope Foundation' } })
+    const orgId = demoOrg?.id || session.user.organizationId
+
+    // Query campaigns with donations and donors
+    const campaigns = await prisma.campaign.findMany({
+      where: { organizationId: orgId },
+      include: {
+        donations: {
+          include: {
+            donor: true
+          }
+        }
+      },
       skip,
       take
     })
-    if (total === 0) {
-      await ensureDefaultCampaignsForOrg(session.user.organizationId)
-      ;({ campaigns, total } = await listCampaigns({
-        organizationId: session.user.organizationId,
-        skip,
-        take
-      }))
-    }
 
-    return NextResponse.json({ campaigns, total, page, pageSize })
+    const total = await prisma.campaign.count({ where: { organizationId: orgId } })
+
+    // Calculate totals and format donor info
+    const campaignsWithTotals = campaigns.map(campaign => {
+      const totalRaised = campaign.donations.reduce((sum, d) => sum + d.amount, 0)
+      const donorsList = campaign.donations.map(d => ({
+        name: `${d.donor.firstName} ${d.donor.lastName}`,
+        amount: d.amount,
+        date: d.date
+      }))
+      return {
+        ...campaign,
+        totalRaised,
+        donorsList,
+        donorCount: donorsList.length
+      }
+    })
+
+    return NextResponse.json({ campaigns: campaignsWithTotals, total, page, pageSize })
   } catch (error) {
     // TODO: Handle errors
     return NextResponse.json({ error: 'Internal server error.' }, { status: 500 })

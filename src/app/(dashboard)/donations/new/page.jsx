@@ -11,7 +11,8 @@ import AIFormHelper from '@/components/AIFormHelper'
 export default function NewDonationPage() {
   // TODO: Implement donation creation form
   const [amount, setAmount] = useState('')
-  const [donorId, setDonorId] = useState('')
+  const [firstName, setFirstName] = useState('')
+  const [lastName, setLastName] = useState('')
   const [campaignId, setCampaignId] = useState('')
   const [date, setDate] = useState('')
   const [type, setType] = useState('ONE_TIME')
@@ -19,18 +20,38 @@ export default function NewDonationPage() {
   const [notes, setNotes] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [userRole, setUserRole] = useState(null)
   const router = useRouter()
 
-  const { donors, loading: donorsLoading, error: donorsError } = useDonors(1, 100)
   const { campaigns, loading: campaignsLoading, error: campaignsError } = useCampaigns()
 
-  // For simplicity, donorId is a text input. In a real app, use a select with donor names.
+  // Fetch current user info and pre-fill name for non-admins
+  React.useEffect(() => {
+    async function fetchUserInfo() {
+      try {
+        const res = await fetch('/api/auth/session');
+        if (res.ok) {
+          const data = await res.json();
+          setUserRole(data.user?.role);
+          // Pre-fill name for non-admins
+          if (data.user?.role !== 'ADMIN') {
+            setFirstName(data.user?.firstName || '');
+            setLastName(data.user?.lastName || '');
+          }
+        }
+      } catch (err) {
+        console.error('Failed to fetch user info:', err);
+      }
+    }
+    fetchUserInfo();
+  }, []);
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
     setLoading(true)
-    if (!amount || !donorId || !date) {
-      setError('All fields are required.')
+    if (!amount || !firstName || !lastName || !date) {
+      setError('Amount, first name, last name, and date are required.')
       setLoading(false)
       return
     }
@@ -40,7 +61,8 @@ export default function NewDonationPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           amount: parseFloat(amount),
-          donorId,
+          firstName,
+          lastName,
           campaignId: campaignId || null,
           date,
           type,
@@ -49,14 +71,16 @@ export default function NewDonationPage() {
         })
       })
       const data = await res.json()
-        if (!res.ok) {
+      console.log('API Response:', res.status, data) // Debug log
+      if (!res.ok) {
         const details = data?.details?.fieldErrors
         const detailMsg = details ? Object.entries(details).map(([k, v]) => `${k}: ${v.join(', ')}`).join('; ') : ''
         setError(data.error || detailMsg || 'Failed to create donation.')
       } else {
-          router.push('/donations?created=1')
+        router.push('/donations?created=1')
       }
     } catch (err) {
+      console.error('Donation submission error:', err) // Debug log
       setError('Failed to create donation. Please try again.')
     } finally {
       setLoading(false)
@@ -83,27 +107,35 @@ export default function NewDonationPage() {
             disabled={loading}
           />
         </div>
-        {/* Donor */}
+        {/* First Name */}
         <div>
-          <div className="flex items-center gap-1">
-            <label className="block text-sm mb-1">Donor</label>
-            <AIFormHelper field="donor" context={{}} onSuggest={() => {}} />
+          <div className="flex items-center gap-1 mb-1">
+            <label className="block text-sm font-medium">First Name</label>
+            <AIFormHelper field="firstName" context={{}} onSuggest={() => {}} />
           </div>
-          {donorsError && <div className="text-sm text-red-600">Failed to load donors</div>}
-          <select
-            className="border rounded px-2 py-2 w-full"
-            value={donorId}
-            onChange={e => setDonorId(e.target.value)}
-            disabled={loading || donorsLoading}
+          <Input
+            type="text"
+            placeholder="First Name"
+            value={firstName}
+            onChange={e => setFirstName(e.target.value)}
             required
-          >
-            <option value="">Select a donor</option>
-            {donors.map(d => (
-              <option key={d.id} value={d.id}>
-                {[d.firstName, d.lastName].filter(Boolean).join(' ')}
-              </option>
-            ))}
-          </select>
+            disabled={loading || (userRole !== 'ADMIN')}
+          />
+        </div>
+        {/* Last Name */}
+        <div>
+          <div className="flex items-center gap-1 mb-1">
+            <label className="block text-sm font-medium">Last Name</label>
+            <AIFormHelper field="lastName" context={{}} onSuggest={() => {}} />
+          </div>
+          <Input
+            type="text"
+            placeholder="Last Name"
+            value={lastName}
+            onChange={e => setLastName(e.target.value)}
+            required
+            disabled={loading || (userRole !== 'ADMIN')}
+          />
         </div>
         {/* Campaign (optional) */}
         <div>
