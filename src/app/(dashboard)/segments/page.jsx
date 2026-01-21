@@ -47,7 +47,7 @@ export default function SegmentsPage() {
               segments.map(segment => (
                 <tr key={segment.id}>
                   <td className="border px-2 py-1 font-medium">
-                    <a href={`/dashboard/segments/${segment.id}`} className="text-blue-600 hover:underline">{segment.name}</a>
+                    {segment.name}
                   </td>
                   <td className="border px-2 py-1">{segment.type}</td>
                   <td className="border px-2 py-1">{segment.description}</td>
