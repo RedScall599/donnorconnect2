@@ -29,7 +29,7 @@ export default function SiteHeader({ userEmail }) {
     { name: 'About', href: '/about' },
     { name: 'Why DonorConnect', href: '/why-donorconnect' },
     { name: 'Dashboard', href: '/dashboard' },
-    { name: 'Donors', href: '/donors', adminOnly: true },
+    { name: 'Donors', href: '/donors' },
     { name: 'Donations', href: '/donations' },
     { name: 'Campaigns', href: '/campaigns' },
     { name: 'Segments', href: '/segments', adminOnly: true },

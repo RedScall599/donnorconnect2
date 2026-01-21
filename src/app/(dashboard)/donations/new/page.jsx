@@ -11,8 +11,8 @@ import AIFormHelper from '@/components/AIFormHelper'
 export default function NewDonationPage() {
   // TODO: Implement donation creation form
   const [amount, setAmount] = useState('')
-  const [firstName, setFirstName] = useState('')
-  const [lastName, setLastName] = useState('')
+  const [donorId, setDonorId] = useState('')
+  const [email, setEmail] = useState('')
   const [campaignId, setCampaignId] = useState('')
   const [date, setDate] = useState('')
   const [type, setType] = useState('ONE_TIME')
@@ -23,9 +23,10 @@ export default function NewDonationPage() {
   const [userRole, setUserRole] = useState(null)
   const router = useRouter()
 
+  const { donors, loading: donorsLoading } = useDonors(1, 100)
   const { campaigns, loading: campaignsLoading, error: campaignsError } = useCampaigns()
 
-  // Fetch current user info and pre-fill name for non-admins
+  // Fetch current user info and pre-fill email for non-admins
   React.useEffect(() => {
     async function fetchUserInfo() {
       try {
@@ -33,10 +34,9 @@ export default function NewDonationPage() {
         if (res.ok) {
           const data = await res.json();
           setUserRole(data.user?.role);
-          // Pre-fill name for non-admins
+          // Pre-fill email for non-admins
           if (data.user?.role !== 'ADMIN') {
-            setFirstName(data.user?.firstName || '');
-            setLastName(data.user?.lastName || '');
+            setEmail(data.user?.email || '');
           }
         }
       } catch (err) {
@@ -50,25 +50,44 @@ export default function NewDonationPage() {
     e.preventDefault()
     setError('')
     setLoading(true)
-    if (!amount || !firstName || !lastName || !date) {
-      setError('Amount, first name, last name, and date are required.')
-      setLoading(false)
-      return
+    
+    // For admins using donor selector
+    if (userRole === 'ADMIN' && donorId) {
+      if (!amount || !donorId || !date) {
+        setError('Amount, donor, and date are required.')
+        setLoading(false)
+        return
+      }
+    } else {
+      // For non-admins using email
+      if (!amount || !email || !date) {
+        setError('Amount, email, and date are required.')
+        setLoading(false)
+        return
+      }
     }
+    
     try {
+      const payload = {
+        amount: parseFloat(amount),
+        campaignId: campaignId || null,
+        date,
+        type,
+        method: method || null,
+        notes: notes || null
+      }
+      
+      // Add either donorId or email
+      if (userRole === 'ADMIN' && donorId) {
+        payload.donorId = donorId
+      } else {
+        payload.email = email
+      }
+      
       const res = await fetch('/api/donations', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          amount: parseFloat(amount),
-          firstName,
-          lastName,
-          campaignId: campaignId || null,
-          date,
-          type,
-          method: method || null,
-          notes: notes || null
-        })
+        body: JSON.stringify(payload)
       })
       const data = await res.json()
       console.log('API Response:', res.status, data) // Debug log
@@ -107,36 +126,44 @@ export default function NewDonationPage() {
             disabled={loading}
           />
         </div>
-        {/* First Name */}
-        <div>
-          <div className="flex items-center gap-1 mb-1">
-            <label className="block text-sm font-medium">First Name</label>
-            <AIFormHelper field="firstName" context={{}} onSuggest={() => {}} />
+        {/* Donor Selection - Admin sees dropdown, non-admin sees pre-filled email */}
+        {userRole === 'ADMIN' ? (
+          <div>
+            <div className="flex items-center gap-1 mb-1">
+              <label className="block text-sm font-medium">Select Donor</label>
+              <AIFormHelper field="donor" context={{}} onSuggest={() => {}} />
+            </div>
+            <select
+              className="border rounded px-2 py-2 w-full"
+              value={donorId}
+              onChange={e => setDonorId(e.target.value)}
+              disabled={loading || donorsLoading}
+              required
+            >
+              <option value="">Select a donor</option>
+              {donors.map(d => (
+                <option key={d.id} value={d.id}>
+                  {[d.firstName, d.lastName].filter(Boolean).join(' ')}
+                </option>
+              ))}
+            </select>
           </div>
-          <Input
-            type="text"
-            placeholder="First Name"
-            value={firstName}
-            onChange={e => setFirstName(e.target.value)}
-            required
-            disabled={loading || (userRole !== 'ADMIN')}
-          />
-        </div>
-        {/* Last Name */}
-        <div>
-          <div className="flex items-center gap-1 mb-1">
-            <label className="block text-sm font-medium">Last Name</label>
-            <AIFormHelper field="lastName" context={{}} onSuggest={() => {}} />
+        ) : (
+          <div>
+            <div className="flex items-center gap-1 mb-1">
+              <label className="block text-sm font-medium">Email</label>
+              <AIFormHelper field="email" context={{}} onSuggest={() => {}} />
+            </div>
+            <Input
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              required
+              disabled={true}
+            />
           </div>
-          <Input
-            type="text"
-            placeholder="Last Name"
-            value={lastName}
-            onChange={e => setLastName(e.target.value)}
-            required
-            disabled={loading || (userRole !== 'ADMIN')}
-          />
-        </div>
+        )}
         {/* Campaign (optional) */}
         <div>
           <div className="flex items-center gap-1">

@@ -4,8 +4,9 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { Home, Users, Gift, TrendingUp, CheckSquare, FolderTree, Workflow } from 'lucide-react'
 
-// Base navigation excludes Dashboard to allow it to always be first
+// Base navigation items
 const baseNavigation = [
+  { name: 'Donors', href: '/donors', icon: Users },
   { name: 'Donations', href: '/donations', icon: Gift },
   { name: 'Campaigns', href: '/campaigns', icon: TrendingUp },
   { name: 'Workflows', href: '/workflows', icon: Workflow },
@@ -17,18 +18,15 @@ export default async function DashboardLayout({ children }) {
   const user = await getSessionUser();
   if (!user) redirect('/login');
 
-  // Build nav with Dashboard first; show Donors/Segments only to ADMINs
+  // Build nav with Dashboard first; show Segments only to ADMINs
   const adminExtras = user?.role === 'ADMIN'
-    ? [
-        { name: 'Donors', href: '/donors', icon: Users },
-        { name: 'Segments', href: '/segments', icon: FolderTree },
-      ]
+    ? [{ name: 'Segments', href: '/segments', icon: FolderTree }]
     : []
 
   const navigation = [
     { name: 'Dashboard', href: '/dashboard', icon: Home },
-    ...adminExtras,
     ...baseNavigation,
+    ...adminExtras,
   ]
 
   return (

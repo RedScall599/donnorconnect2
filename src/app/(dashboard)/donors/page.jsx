@@ -13,7 +13,8 @@ export default function DonorsPage() {
   const [page, setPage] = React.useState(1);
   const [statusFilter, setStatusFilter] = React.useState('');
   const [userRole, setUserRole] = React.useState(null);
-  const { donors, loading, error, totalPages } = useDonors(page, 20, { search, status: statusFilter });
+  const [refreshKey, setRefreshKey] = React.useState(0);
+  const { donors, loading, error, totalPages } = useDonors(page, 20, { search, status: statusFilter, refresh: refreshKey });
 
   // Fetch user role to check if admin
   React.useEffect(() => {
@@ -31,17 +32,28 @@ export default function DonorsPage() {
     fetchUserRole();
   }, []);
 
-  // Block access for non-admins
-  if (userRole !== null && userRole !== 'ADMIN') {
-    return (
-      <div className="space-y-6">
-        <div className="text-center py-12">
-          <h1 className="text-3xl font-bold text-red-600">Access Denied</h1>
-          <p className="text-gray-600 mt-4">Only administrators can access the donors page.</p>
-        </div>
-      </div>
-    );
-  }
+  const handleDelete = async (donorId, donorName) => {
+    if (!confirm(`Are you sure you want to delete ${donorName}? This action cannot be undone.`)) {
+      return;
+    }
+
+    try {
+      const res = await fetch(`/api/donors/${donorId}`, {
+        method: 'DELETE'
+      });
+
+      if (res.ok) {
+        // Refresh the donor list
+        setRefreshKey(prev => prev + 1);
+      } else {
+        const data = await res.json();
+        alert(`Failed to delete donor: ${data.error || 'Unknown error'}`);
+      }
+    } catch (err) {
+      alert('Failed to delete donor. Please try again.');
+      console.error('Delete error:', err);
+    }
+  };
 
   // TODO: Implement donors list with search, filtering, and pagination
 
@@ -102,12 +114,22 @@ export default function DonorsPage() {
             <thead>
               <tr>
                 <th className="border px-2 py-1">Name</th>
-                {userRole === 'ADMIN' && <th className="border px-2 py-1">Email</th>}
+                {userRole === 'ADMIN' && (
+                  <>
+                    <th className="border px-2 py-1">Email</th>
+                    <th className="border px-2 py-1">Phone</th>
+                    <th className="border px-2 py-1">Address</th>
+                    <th className="border px-2 py-1">City</th>
+                    <th className="border px-2 py-1">State</th>
+                    <th className="border px-2 py-1">Zip</th>
+                  </>
+                )}
                 <th className="border px-2 py-1">Status</th>
                 <th className="border px-2 py-1">Total Gifts</th>
                 <th className="border px-2 py-1">Total Amount</th>
+                <th className="border px-2 py-1">Risk Level</th>
                 <th className="border px-2 py-1">Last Gift</th>
-                <th className="border px-2 py-1">Actions</th>
+                {userRole === 'ADMIN' && <th className="border px-2 py-1">Actions</th>}
               </tr>
             </thead>
             <tbody>
@@ -119,21 +141,39 @@ export default function DonorsPage() {
                         {[donor.firstName, donor.lastName].filter(Boolean).join(' ') || 'Unknown'}
                       </Link>
                     </td>
-                    {userRole === 'ADMIN' && <td className="border px-2 py-1">{donor.email}</td>}
+                    {userRole === 'ADMIN' && (
+                      <>
+                        <td className="border px-2 py-1">{donor.email || 'N/A'}</td>
+                        <td className="border px-2 py-1">{donor.phone || 'N/A'}</td>
+                        <td className="border px-2 py-1">{donor.address || 'N/A'}</td>
+                        <td className="border px-2 py-1">{donor.city || 'N/A'}</td>
+                        <td className="border px-2 py-1">{donor.state || 'N/A'}</td>
+                        <td className="border px-2 py-1">{donor.zipCode || 'N/A'}</td>
+                      </>
+                    )}
                     <td className="border px-2 py-1">{donor.status}</td>
                     <td className="border px-2 py-1">{donor.totalGifts ?? 'N/A'}</td>
                     <td className="border px-2 py-1">${donor.totalAmount ?? 'N/A'}</td>
+                    <td className="border px-2 py-1">{donor.retentionRisk}</td>
                     <td className="border px-2 py-1">{donor.lastGiftDate ? new Date(donor.lastGiftDate).toLocaleDateString() : 'N/A'}</td>
-                    <td className="border px-2 py-1">
-                      <Link href={`/donors/${donor.id}/edit`} className="font-medium transition-colors" style={{ color: 'hsl(var(--primary))' }}>Edit</Link>
-                      <span className="mx-2" style={{ color: 'hsl(var(--border))' }}>|</span>
-                      <button className="font-medium transition-colors hover:opacity-80" style={{ color: 'hsl(var(--destructive))' }} onClick={() => alert('Delete not implemented')}>Delete</button>
-                    </td>
+                    {userRole === 'ADMIN' && (
+                      <td className="border px-2 py-1">
+                        <Link href={`/donors/${donor.id}/edit`} className="font-medium transition-colors" style={{ color: 'hsl(var(--primary))' }}>Edit</Link>
+                        <span className="mx-2" style={{ color: 'hsl(var(--border))' }}>|</span>
+                        <button 
+                          className="font-medium transition-colors hover:opacity-80" 
+                          style={{ color: 'hsl(var(--destructive))' }} 
+                          onClick={() => handleDelete(donor.id, [donor.firstName, donor.lastName].filter(Boolean).join(' '))}
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    )}
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan={7} className="text-center py-4">No donors found.</td>
+                  <td colSpan={userRole === 'ADMIN' ? 13 : 6} className="text-center py-4">No donors found.</td>
                 </tr>
               )}
             </tbody>

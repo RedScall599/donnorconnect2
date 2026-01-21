@@ -8,6 +8,7 @@ export const DonationTypeEnum = z.enum(['ONE_TIME', 'RECURRING', 'PLEDGE', 'IN_K
 // createDonationSchema
 export const createDonationSchema = z.object({
 	donorId: z.string().cuid().optional(),
+	email: z.string().email().optional(),
 	firstName: z.string().min(1).max(50).optional(),
 	lastName: z.string().min(1).max(50).optional(),
 	campaignId: z.string().cuid().nullable().optional(),
@@ -16,8 +17,8 @@ export const createDonationSchema = z.object({
 	type: DonationTypeEnum.default('ONE_TIME'),
 	method: z.string().max(50).nullable().optional(),
 	notes: z.string().max(1000).nullable().optional()
-}).refine(data => data.donorId || (data.firstName && data.lastName), {
-	message: 'Either donorId or both firstName and lastName must be provided'
+}).refine(data => data.donorId || data.email || (data.firstName && data.lastName), {
+	message: 'Either donorId, email, or both firstName and lastName must be provided'
 })
 
 

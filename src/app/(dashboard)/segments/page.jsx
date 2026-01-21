@@ -51,7 +51,7 @@ export default function SegmentsPage() {
                   </td>
                   <td className="border px-2 py-1">{segment.type}</td>
                   <td className="border px-2 py-1">{segment.description}</td>
-                  <td className="border px-2 py-1">{segment.donors ? segment.donors.length : 0}</td>
+                  <td className="border px-2 py-1">{segment.memberCount || 0}</td>
                 </tr>
               ))
             ) : (

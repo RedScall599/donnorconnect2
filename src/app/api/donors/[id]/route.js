@@ -53,19 +53,29 @@ export async function PATCH(request, { params }) {
     // TODO: Parse and validate request body
     const data = await request.json()
     // Optionally: validate data here (e.g., with Zod)
+    
+    // Filter to only allow specific editable fields
+    const allowedFields = ['firstName', 'lastName', 'email', 'phone', 'address', 'city', 'state', 'zipCode', 'status', 'retentionRisk']
+    const updateData = {}
+    for (const field of allowedFields) {
+      if (data[field] !== undefined) {
+        updateData[field] = data[field]
+      }
+    }
 
     // TODO: Update donor in database
     const { prisma } = await import('@/lib/db')
     const donor = await prisma.donor.update({
       where: { id, organizationId: session.user.organizationId },
-      data
+      data: updateData
     })
 
     // TODO: Return updated donor
     return NextResponse.json({ donor })
   } catch (error) {
     // TODO: Handle validation errors and other errors
-    return NextResponse.json({ error: 'Internal server error.' }, { status: 500 })
+    console.error('PATCH donor error:', error)
+    return NextResponse.json({ error: error.message || 'Internal server error.' }, { status: 500 })
   }
 }
 

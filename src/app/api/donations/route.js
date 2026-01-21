@@ -78,9 +78,38 @@ export async function POST(request) {
     const demoOrg = await prisma.organization.findFirst({ where: { name: 'Hope Foundation' } })
     const orgId = demoOrg?.id || session.user.organizationId
 
-    // Find or create donor by first/last name
+    // Find or create donor by email or first/last name
     let donor
-    if (input.firstName && input.lastName) {
+    if (input.email) {
+      // Try to find existing donor with this email
+      donor = await prisma.donor.findFirst({
+        where: { 
+          email: input.email,
+          organizationId: orgId 
+        }
+      })
+      
+      // If not found, create new donor using user account info
+      if (!donor) {
+        // Look up the user account with this email to get their name
+        const user = await prisma.user.findFirst({
+          where: { email: input.email }
+        })
+        
+        const firstName = user?.firstName || 'Unknown'
+        const lastName = user?.lastName || 'Donor'
+        
+        donor = await prisma.donor.create({
+          data: {
+            firstName,
+            lastName,
+            email: input.email,
+            organizationId: orgId,
+            status: 'ACTIVE'
+          }
+        })
+      }
+    } else if (input.firstName && input.lastName) {
       // Try to find existing donor with this name
       donor = await prisma.donor.findFirst({
         where: { 
@@ -156,7 +185,8 @@ export async function POST(request) {
     return NextResponse.json({ donation }, { status: 201 })
   } catch (error) {
     // TODO: Handle errors
-    return NextResponse.json({ error: 'Internal server error.' }, { status: 500 })
+    console.error('Donation creation error:', error)
+    return NextResponse.json({ error: 'Internal server error.', details: error.message }, { status: 500 })
   }
 }
 
