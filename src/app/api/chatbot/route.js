@@ -47,6 +47,17 @@ Keep responses concise, friendly, and actionable. If asked about features not me
 
     const response = completion.choices[0].message.content
 
+    // Audit log for security review
+    console.log('[AI AUDIT]', {
+      timestamp: new Date().toISOString(),
+      user: session.user.email,
+      organization: session.user.organization?.name,
+      model: 'gpt-4o-mini',
+      promptLength: message.length,
+      responseLength: response.length,
+      tokensUsed: completion.usage?.total_tokens
+    })
+
     return NextResponse.json({ response })
   } catch (error) {
     console.error('Chatbot error:', error)

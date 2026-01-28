@@ -36,7 +36,7 @@ export default function NewDonorPage() {
 
   return (
     <div className="space-y-6">
-      <div>
+      <div className="max-w-2xl mx-auto text-center">
         <h1 className="text-3xl font-bold">Add New Donor</h1>
         <p className="text-gray-600 mt-2">Create a new donor profile</p>
       </div>

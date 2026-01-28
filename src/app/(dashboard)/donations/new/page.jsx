@@ -244,9 +244,9 @@ export default function NewDonationPage() {
             disabled={loading}
           />
         </div>
-        <Button type="submit" className="w-full" disabled={loading}>
+        <button type="submit" className="btn-primary w-full" disabled={loading}>
           {loading ? 'Saving...' : 'Save Donation'}
-        </Button>
+        </button>
       </form>
     </div>
   )

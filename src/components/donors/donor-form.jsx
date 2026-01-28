@@ -60,9 +60,10 @@ export function DonorForm({ donor, onSubmit, onCancel }) {
   }
 
   return (
-    <Form onSubmit={rhfHandleSubmit(handleSubmit)}>
-      {/* TODO: Implement donor form with fields: */}
-      <FormField name="firstName" control={register('firstName')}>
+    <div className="max-w-2xl mx-auto">
+      <Form onSubmit={rhfHandleSubmit(handleSubmit)}>
+        {/* TODO: Implement donor form with fields: */}
+        <FormField name="firstName" control={register('firstName')}>
         <FormItem>
           <div className="flex items-center gap-1">
             <FormLabel>First Name</FormLabel>
@@ -209,13 +210,16 @@ export function DonorForm({ donor, onSubmit, onCancel }) {
 
       {/* TODO: Add submit and cancel buttons */}
       <div className="flex gap-2 mt-4">
-        <Button type="submit" disabled={isSubmitting}>{isSubmitting ? 'Saving...' : 'Submit'}</Button>
-        {onCancel && <Button type="button" variant="secondary" onClick={onCancel}>Cancel</Button>}
+        <button type="submit" disabled={isSubmitting} className="btn-primary">
+          {isSubmitting ? 'Saving...' : 'Submit'}
+        </button>
+        {onCancel && <button type="button" className="btn-secondary" onClick={onCancel}>Cancel</button>}
       </div>
 
       {/* TODO: Handle loading state during submission */}
       {isSubmitting && <div className="text-gray-500 mt-2">Submitting...</div>}
-    </Form>
+      </Form>
+    </div>
   )
 }
 

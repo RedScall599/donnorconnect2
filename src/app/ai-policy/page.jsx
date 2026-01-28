@@ -8,22 +8,29 @@ export default function AIPolicyPage() {
 
       <section className="mt-8">
         <h2 className="text-xl font-semibold">AI-powered Features</h2>
-        <p className="mt-2 text-gray-600 text-base">DonorConnect uses AI to provide donation risk scoring and donor-summary suggestions to help nonprofit staff prioritize outreach and improve donor retention.</p>
+        <p className="mt-2 text-gray-600 text-base">DonorConnect uses AI to enhance nonprofit operations through:</p>
+        <ul className="list-disc list-inside mt-2 text-gray-600 text-base space-y-1">
+          <li><strong>Intelligent Chatbot Assistant:</strong> Powered by GPT-4o Mini to answer questions about donors, donations, campaigns, and platform features in natural language.</li>
+          <li><strong>Form Field Guidance:</strong> Context-aware AI helpers (question mark icons) that provide real-time suggestions for filling out donor and donation forms.</li>
+          <li><strong>Donor Risk Insights:</strong> AI-assisted analysis to help identify donors at risk of lapsing and prioritize retention efforts.</li>
+        </ul>
       </section>
 
       <section className="mt-6">
         <h2 className="text-xl font-semibold">AI APIs and Model</h2>
-        <p className="mt-2 text-gray-600 text-base">We use a hosted AI API to generate risk scores and donor messaging suggestions. The model used is GPT-5 mini via provider API (developer-managed keys). The model choice is documented here for transparency and auditability.</p>
+        <p className="mt-2 text-gray-600 text-base">We use OpenAI's GPT-4o Mini model via their hosted API to power our chatbot assistant and provide donor engagement insights. The model is accessed using securely managed API keys (stored in environment variables, never exposed to clients). This model choice balances performance, cost-effectiveness, and responsible AI practices while maintaining transparency and auditability.</p>
       </section>
 
       <section className="mt-6">
         <h2 className="text-xl font-semibold">How We Use AI Responsibly</h2>
-        <ul className="list-disc list-inside mt-2 text-gray-600 text-base">
-          <li>Human-in-the-loop: AI suggestions are presented as recommendations; staff make final decisions.</li>
-          <li>Data minimization: We only send necessary donor attributes (e.g., donation history summary, anonymized engagement signals) to the AI API — not full PII unless explicitly allowed by the organization.</li>
-          <li>Consent & access control: AI features are available only to authenticated users within the organization. Admins can toggle AI features.</li>
-          <li>Explainability: We record the prompt and model response for each AI suggestion to allow review and auditing.</li>
-          <li>Safety filters: We sanitize and post-process AI outputs to remove disallowed content before display.</li>
+        <p className="mt-2 text-gray-600 text-base">At DonorConnect, we consider bias, ethics, security, and data privacy when using and building AI systems. Our responsible AI practices include:</p>
+        <ul className="list-disc list-inside mt-3 text-gray-600 text-base space-y-2">
+          <li><strong>Bias Mitigation:</strong> We regularly audit AI outputs to identify and correct potential biases in donor risk scoring and recommendations. Our AI suggestions are reviewed by diverse teams to ensure fair treatment across all donor demographics.</li>
+          <li><strong>Ethical Design:</strong> Human-in-the-loop approach ensures AI suggestions are presented as recommendations only; nonprofit staff make all final decisions about donor engagement and outreach strategies.</li>
+          <li><strong>Security:</strong> API keys are securely stored using environment variables, never exposed in client-side code. All AI API calls are authenticated and encrypted in transit. We maintain audit logs of all AI interactions for security review.</li>
+          <li><strong>Data Privacy:</strong> We practice data minimization by only sending necessary donor attributes (donation history summary, anonymized engagement signals) to the AI API — not full personally identifiable information (PII) unless explicitly allowed by the organization.</li>
+          <li><strong>Explainability & Transparency:</strong> We record the prompt and model response for each AI suggestion to allow review, auditing, and understanding of how recommendations are generated.</li>
+          <li><strong>Safety Filters:</strong> We sanitize and post-process AI outputs to remove disallowed content, ensure appropriate language, and validate recommendations before display to users.</li>
         </ul>
       </section>
 

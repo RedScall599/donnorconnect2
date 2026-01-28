@@ -1,121 +1,70 @@
-[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/Rgnq8kxT)
-# DonorConnect - Learning Project
+# DonorConnect - Donor Retention Platform
 
-> **🎯 Educational Project**: A complete donor retention platform starter code designed to teach modern full-stack development with Next.js 16, PostgreSQL, and modern React patterns.
+> **🎯 Production MVP**: A complete donor retention platform helping nonprofits solve the critical "first-to-second gift" conversion problem with AI-powered insights.
 
-## 🚀 What You'll Build
+## 🚀 What This Platform Does
 
-A production-ready donor retention platform that helps nonprofits solve the critical "first-to-second gift" conversion problem. You'll implement:
+A fully functional donor retention platform that helps nonprofits manage donors, track donations, and improve retention through:
 
-- **Multi-tenant donor management** with advanced segmentation
-- **Campaign tracking** with donation recording and analytics
-- **Automated workflows** for donor engagement
-- **Session-based authentication** with role-based access
-- **Real-time dashboard** with interactive data tables
-- **Advanced form handling** with validation and error states
+- **Multi-tenant donor management** with role-based access (Admin, Staff)
+- **Campaign tracking** with donation recording and real-time analytics
+- **AI-powered chatbot** using GPT-4o Mini for platform assistance
+- **Dynamic donor segmentation** with automatic member counting
+- **Session-based authentication** with secure HTTP-only cookies
+- **Real-time dashboard** with interactive data visualization
+- **Comprehensive admin tools** for full donor CRUD operations
 
-## 📚 Learning Objectives
+## ✨ Key Features
 
-This project teaches you modern full-stack web development through hands-on implementation. By completing this project, you will master:
+### 🔐 Authentication & Authorization
+- **Session-based authentication** with HTTP-only cookies
+- **Role-based access control** (Admin and Staff roles)
+- **Protected routes** with automatic redirects
+- **Password hashing** with bcrypt
+- **Secure session management** with database storage
 
-### 🔐 Authentication & Security
-- **Session-based authentication** with HTTP-only cookies (no JWT complexity)
-- **Password hashing** with bcrypt and salt rounds
-- **Route protection** using Next.js 16 middleware
-- **Multi-tenant data isolation** with organization-based filtering
-- **Session management** with automatic cleanup and validation
+### 👥 Donor Management
+- **Full CRUD operations** for donor records
+- **Admin-exclusive editing** with comprehensive field access
+- **Retention risk tracking** (Low, Moderate, High, Critical)
+- **Donor status management** (Active, Lapsed, Inactive, Do Not Contact)
+- **Contact information** including email, phone, and address
+- **Delete functionality** with confirmation dialogs
 
-### 🛠 API Development
-- **RESTful API design** with Next.js App Router
-- **CRUD operations** with proper HTTP methods and status codes
-- **Request/response validation** using Zod schemas
-- **Error handling** with structured error responses
-- **Database integration** with Prisma ORM and PostgreSQL
-- **Multi-tenant architecture** with organization-scoped data
+### 💰 Donation Tracking
+- **Email-based donation creation** for authenticated users
+- **Campaign-linked donations** for performance tracking
+- **Real-time donor metric updates** (total gifts, total amount, last gift date)
+- **Payment type tracking** (Cash, Check, Credit Card, Bank Transfer, etc.)
+- **Automatic donor creation** from user accounts when donating
 
-### 🎨 Modern React Patterns
-- **React Hook Form** for complex form state management
-- **Custom hooks** for data fetching and state management
-- **Server/client components** with Next.js 16 App Router
-- **Compound components** for reusable UI patterns
-- **Error boundaries** and loading states
-- **Real-time updates** with optimistic UI patterns
+### 📊 Campaign Analytics
+- **Total raised calculation** per campaign
+- **Donor participation lists** with amounts and dates
+- **Campaign status tracking** (Planned, Active, Completed, Archived)
+- **Goal progress visualization**
+- **Annual Fund 2025** with updated campaign data
 
-### 🗄️ Database & Data Modeling
-- **Relational database design** with proper normalization
-- **Prisma schema definition** with relationships and constraints
-- **Database migrations** and version control
-- **Seed data** for realistic development and testing
-- **Performance optimization** with proper indexing
-- **Data aggregation** for analytics and reporting
+### 🎯 Dynamic Segmentation
+- **Real-time member counting** based on donor criteria
+- **First-Time Donors segment** (donors who gave exactly once)
+- **Major Donors segment** ($1000+ lifetime giving)
+- **High-Risk Retention segment** (donors at high/critical risk)
+- **Lapsed Donors segment** (12+ months without giving)
 
-### 🧪 Testing & Quality Assurance
-- **Unit testing** with Vitest and React Testing Library
-- **Integration testing** for API routes and database operations
-- **End-to-end testing** with Playwright
-- **Mock service workers** (MSW) for API testing
-- **Test-driven development** workflow
+### 🤖 AI-Powered Features
+- **Intelligent chatbot assistant** using OpenAI GPT-4o Mini
+- **Natural language platform guidance** for users
+- **Context-aware responses** about donors, donations, campaigns
+- **Secure API key management** with environment variables
+- **Audit logging** for all AI interactions
 
-## 🛤️ Implementation Path
-
-This project uses **TODO-driven development** where each file contains comprehensive implementation guidance:
-
-### Phase 1: Foundation Setup ✅
-- Environment configuration and database setup
-- Prisma schema understanding and seed data exploration
-- shadcn/ui component library familiarization
-
-### Phase 2: Authentication System
-- Implement session-based authentication (`/src/lib/auth.js`, `/src/lib/session.js`)
-- Build login/register forms (`/src/app/(auth)/`)
-- Add route protection middleware (`/src/middleware.js`)
-
-### Phase 3: API Development  
-- Convert TODO API routes to working endpoints (`/src/app/api/`)
-- Implement validation schemas (`/src/lib/validation/`)
-- Add business logic functions (`/src/lib/api/`)
-
-### Phase 4: Dashboard UI
-- Build dashboard pages (`/src/app/(dashboard)/`)
-- Implement data tables and forms
-- Add navigation and user interfaces
-
-### Phase 5: Advanced Features
-- Create donor segmentation builder
-- Implement workflow automation
-- Add task management system
-
-### Phase 6: Testing & Polish
-- Write comprehensive tests
-- Performance optimization
-- Documentation and deployment
-
-## 💡 Learning Features
-
-### 📝 TODO-Driven Development
-Every implementation file includes:
-- **Clear function signatures** with expected parameters
-- **Detailed TODO comments** explaining each step
-- **Example usage** showing how components connect
-- **Implementation hints** for complex logic
-- **Testing suggestions** for validation
-
-### 🔍 Code Examples Throughout
-```javascript
-// Example from src/lib/api/donors.js
-export async function createDonor(data, organizationId) {
-  // TODO: Validate data using createDonorSchema
-  // TODO: Check for duplicate email within organization
-  // TODO: Create donor with Prisma
-  // TODO: Return created donor with calculated metrics
-}
-```
-
-### 🎯 Incremental Complexity
-- Start with simple CRUD operations
-- Progress to complex relationships and validation
-- Advance to real-time features and optimization
-- Master testing and deployment patterns
+### 📈 Dashboard Insights
+- **Total donor count** across organization
+- **Total donation tracking** with real-time updates
+- **At-risk donor alerts** (admin-only)
+- **Recent activity feed**
+- **Role-specific views** (different metrics for admins vs. staff)
 
 ## 🚀 Quick Start
 
@@ -153,19 +102,25 @@ export async function createDonor(data, organizationId) {
    # Generate Prisma client (creates /prisma/generated/)
    npx prisma generate
 
-   # Create and run database migrations
-   npx prisma migrate dev --name init_db_setup
+   # Run database migrations
+   npx prisma migrate deploy
 
    # Load sample data (75 donors, 200+ donations, campaigns, etc.)
    npx prisma db seed
    ```
 
-4. **Start development:**
+4. **Configure OpenAI API (for chatbot):**
+   Add your OpenAI API key to `.env`:
+   ```env
+   OPENAI_API_KEY="sk-proj-your-api-key-here"
+   ```
+
+5. **Start development:**
    ```bash
    pnpm dev
    ```
    
-   🎉 Open [http://localhost:3000](http://localhost:3000) and start coding!
+   🎉 Open [http://localhost:3000](http://localhost:3000) to see the app!
 
 ### 🔑 Test Login Credentials
 
@@ -237,17 +192,21 @@ donor-connect/
 
 ### 🎯 Implementation Status
 
-| Module | Status | Files | Description |
-|--------|--------|-------|-------------|
-| **Configuration** | ✅ Complete | 5 files | Ready-to-use configs for all tools |
-| **Database Schema** | ✅ Complete | schema.prisma | Full nonprofit domain model |
-| **Seed Data** | ✅ Complete | seed.js | 75 donors, 200+ donations, realistic data |
-| **UI Components** | ✅ Complete | 10 components | shadcn/ui foundation ready |
-| **Authentication** | 🔄 TODO | 8 files | Session-based auth implementation |
-| **API Routes** | 🔄 TODO | 15+ files | RESTful endpoints with validation |
-| **Dashboard Pages** | 🔄 TODO | 12 files | React pages with forms and tables |
-| **Business Logic** | 🔄 TODO | 8 files | Data processing and validation |
-| **Testing Suite** | 🔄 TODO | 20+ files | Unit, integration, and E2E tests |
+| Module | Status | Description |
+|--------|--------|-------------|
+| **Configuration** | ✅ Complete | Production-ready configs for all tools |
+| **Database Schema** | ✅ Complete | Full nonprofit domain model with Prisma 7 |
+| **Seed Data** | ✅ Complete | 75 donors, 200+ donations, realistic test data |
+| **UI Components** | ✅ Complete | shadcn/ui foundation with custom components |
+| **Authentication** | ✅ Complete | Session-based auth with HTTP-only cookies |
+| **API Routes** | ✅ Complete | RESTful endpoints for donors, donations, campaigns |
+| **Dashboard Pages** | ✅ Complete | Full dashboard with role-based views |
+| **Donor Management** | ✅ Complete | CRUD operations with admin editing & deletion |
+| **Donation System** | ✅ Complete | Email-based creation with auto donor linking |
+| **Campaign Tracking** | ✅ Complete | Analytics with donor lists and totals |
+| **Segmentation** | ✅ Complete | Dynamic member counting with real-time updates |
+| **AI Chatbot** | ✅ Complete | GPT-4o Mini integration with audit logging |
+| **AI Policy** | ✅ Complete | Responsible AI documentation (bias, ethics, security, privacy) |
 
 ## 🛠 Development Workflow
 
@@ -390,125 +349,40 @@ const segmentCriteria = {
 }
 ```
 
-## 🎯 Implementation Roadmap
+## 💾 Sample Data Overview
 
-### Phase 1: Authentication Foundation 🔐
-**Time Estimate: 2-3 days**
+The seed script creates realistic nonprofit data for development and testing:
 
-**Files to Implement:**
-- `src/lib/auth.js` - Password hashing and validation
-- `src/lib/session.js` - Session creation and management  
-- `src/app/api/auth/*/route.js` - Login, logout, register endpoints
-- `src/app/(auth)/*/page.jsx` - Login and registration forms
-- `src/middleware.js` - Route protection
-
-**Key Learning:**
-- HTTP-only cookie security
-- bcrypt password hashing
-- Session validation patterns
-- Next.js 16 middleware
-
-### Phase 2: Core API Development 🔗
-**Time Estimate: 4-5 days**
-
-**Files to Implement:**
-- `src/app/api/donors/route.js` - CRUD operations for donors
-- `src/app/api/donations/route.js` - Donation recording with metrics updates
-- `src/app/api/campaigns/route.js` - Campaign management
-- `src/lib/validation/*-schema.js` - Zod validation schemas
-- `src/lib/api/*.js` - Business logic and database operations
-
-**Key Learning:**
-- RESTful API design patterns
-- Database transactions
-- Data validation with Zod
-- Error handling strategies
-
-### Phase 3: Dashboard Interface 🎨  
-**Time Estimate: 5-6 days**
-
-**Files to Implement:**
-- `src/app/(dashboard)/donors/page.jsx` - Donor listing with search/filter
-- `src/app/(dashboard)/donors/new/page.jsx` - Donor creation form
-- `src/app/(dashboard)/donations/page.jsx` - Donation recording interface
-- `src/components/donors/*.jsx` - Donor-specific components
-- `src/hooks/use-*.js` - Custom data fetching hooks
-
-**Key Learning:**
-- React Hook Form patterns
-- Table components with sorting/filtering
-- Optimistic UI updates
-- Form validation and error states
-
-### Phase 4: Advanced Features 🚀
-**Time Estimate: 4-5 days**
-
-**Files to Implement:**
-- `src/app/(dashboard)/segments/page.jsx` - Segment builder interface
-- `src/app/(dashboard)/workflows/page.jsx` - Workflow automation
-- `src/components/segments/*.jsx` - Dynamic criteria builder
-- `src/components/workflows/*.jsx` - Workflow step configuration
-
-**Key Learning:**
-- Complex form builders
-- Dynamic UI generation
-- Background job processing
-- Advanced database queries
-
-### Phase 5: Testing & Polish 🧪
-**Time Estimate: 3-4 days**
-
-**Files to Implement:**
-- `tests/lib/*.test.js` - Unit tests for utilities
-- `tests/api/*.test.js` - API endpoint testing
-- `tests/e2e/*.spec.js` - End-to-end user workflows
-- Performance optimization and deployment setup
-
-**Key Learning:**
-- Testing strategies and tools
-- Performance monitoring
-- Production deployment
-- Code quality practices
-
-## 💾 Exploring the Seed Data
-
-Understanding the provided data helps you implement realistic features:
-
-### 📈 **Organization Profiles**
-```sql
--- Two complete nonprofit organizations
-Hope Foundation (75 donors, $145K raised)
-Green Earth Alliance (environmental focus)
-```
+### 📈 **Organizations**
+- **Hope Foundation** - Primary demo organization with 75 donors and $145K+ raised
+- **Green Earth Alliance** - Environmental nonprofit with additional test data
 
 ### 👥 **Donor Distribution** (75 total donors)
-```sql  
--- Realistic retention risk distribution
-40% First-time donors (HIGH risk)    → Need welcome series
-30% Two-gift donors (MEDIUM risk)    → Need retention campaign  
-20% Loyal donors (LOW risk)          → Need upgrade cultivation
-10% Lapsed donors (CRITICAL risk)    → Need reactivation outreach
-```
+- **40%** First-time donors (HIGH risk) - Need welcome series
+- **30%** Two-gift donors (MODERATE risk) - Need retention campaign  
+- **20%** Loyal donors (LOW risk) - Need upgrade cultivation
+- **10%** Lapsed donors (CRITICAL risk) - Need reactivation outreach
 
 ### 💰 **Donation Patterns** (200+ donations)
-```sql
--- Gift size distribution mirrors real nonprofits
-- $10-50: Online/monthly donors (65%)
-- $51-250: Event/mail donors (25%)  
-- $251-1000: Major gift prospects (8%)
-- $1000+: Major donors (2%)
-```
+Gift size distribution mirrors real nonprofits:
+- **$10-50**: Online/monthly donors (65%)
+- **$51-250**: Event/mail donors (25%)  
+- **$251-1000**: Major gift prospects (8%)
+- **$1000+**: Major donors (2%)
 
 ### 📊 **Campaign Performance**
-```sql
-Annual Fund 2024        → $67,500 raised (ongoing)
-Emergency Response      → $23,400 raised (completed)  
-Holiday Campaign        → $18,900 raised (completed)
-Major Gifts Initiative  → $35,200 raised (active)
-```
+- **Annual Fund 2025** - $67,500+ raised (active)
+- **Emergency Response** - $23,400 raised (completed)  
+- **Holiday Campaign** - $18,900 raised (completed)
+- **Major Gifts Initiative** - $35,200 raised (active)
 
 ### 🎯 **Pre-built Segments**
-- **First-Time Donors**: Welcome series candidates
+- **First-Time Donors** - Welcome series candidates (30 members)
+- **High-Risk Retention** - Donors needing engagement (30 members)
+- **Major Donors** - $1000+ lifetime giving
+- **Lapsed Donors** - 12+ months without giving
+
+> **💡 Tip**: Use `npx prisma studio` to explore all data visually!
 - **Lapsed Donors**: Reactivation targets  
 - **Major Gift Prospects**: High-capacity individuals
 - **Monthly Sustainers**: Recurring gift donors
@@ -519,14 +393,19 @@ Major Gifts Initiative  → $35,200 raised (active)
 ## 🏗 Technology Stack
 
 ### **Core Framework**
-- **Next.js 16** (App Router) - React meta-framework with file-based routing
+- **Next.js 16.0.10** (App Router) - React meta-framework with file-based routing
 - **React 19.2.3** - UI library with modern hooks and server components
-- **JavaScript** (no TypeScript) - Faster development for learning/MVP
+- **JavaScript** (no TypeScript) - Rapid development for MVP delivery
 
 ### **Database & ORM**
-- **PostgreSQL** - Production-ready relational database
+- **PostgreSQL** (Neon.tech) - Production cloud database with SSL
 - **Prisma 7.1.0** - Type-safe ORM with migrations and client generation
-- **@prisma/adapter-pg** - Neon PostgreSQL adapter for cloud deployment
+- **@prisma/adapter-pg** - Neon PostgreSQL adapter for serverless deployment
+
+### **AI Integration**
+- **OpenAI GPT-4o Mini** - Intelligent chatbot assistant
+- **openai** npm package - Official OpenAI SDK
+- **Environment-based config** - Secure API key management
 
 ### **UI & Styling**
 - **Tailwind CSS 4.1.18** - Utility-first CSS framework
@@ -535,119 +414,126 @@ Major Gifts Initiative  → $35,200 raised (active)
 
 ### **Forms & Validation**
 - **React Hook Form 7.68.0** - Performant forms with minimal re-renders
-- **Zod 4.2.0** - TypeScript-first schema validation
+- **Zod 4.2.0** - Runtime schema validation
 - **@hookform/resolvers** - Integration layer for form validation
 
 ### **Authentication & Security**
-- **bcrypt** - Password hashing with configurable salt rounds
-- **HTTP-only cookies** - Secure session storage (no localStorage)
-- **Database sessions** - Server-side session management
-
-### **Testing & Quality**
-- **Vitest 4.0.15** - Lightning-fast unit test runner
-- **Playwright** - Cross-browser end-to-end testing
-- **MSW (Mock Service Worker)** - API mocking for testing
-- **ESLint** - Code quality and consistency
+- **bcryptjs** - Password hashing with salt rounds
+- **HTTP-only cookies** - Secure session storage
+- **Database sessions** - Server-side session management with audit trails
 
 ### **Development Tools**
 - **pnpm 10.18.1** - Fast, space-efficient package manager  
 - **Prisma Studio** - Visual database browser
 - **Hot reloading** - Instant feedback during development
+- **ESLint** - Code quality and consistency
 
 ### **Architecture Decisions**
 
-#### Why No TypeScript?
-- **Faster learning curve** for beginners
-- **Reduced complexity** during MVP development  
+#### Why JavaScript (Not TypeScript)?
+- **Faster MVP development** and iteration
+- **Lower learning curve** for rapid prototyping  
 - **JavaScript + Zod** provides runtime validation
-- **Easy migration path** to TypeScript later
+- **Production-ready** without type compilation overhead
 
 #### Why Session-Based Auth?
-- **Simpler than JWT** for learning projects
-- **Better security** with HTTP-only cookies
+- **More secure** with HTTP-only cookies vs. localStorage JWT
 - **Server-side control** over session lifecycle
-- **No client-side token management**
+- **Better for MVP** - simpler to implement and debug
+- **Audit trail** - all sessions tracked in database
 
 #### Why Prisma 7?
-- **Excellent developer experience** with type safety
-- **Built-in migrations** for version control
-- **Client generation** eliminates manual SQL
-- **Rich relationship handling** for complex domains
+- **Excellent developer experience** with IntelliSense
+- **Built-in migrations** for database version control
+- **Custom output directory** (prisma/generated/) for clean architecture
+- **PostgreSQL adapter** for Neon serverless compatibility
 
-## 📖 Additional Resources
+#### Why GPT-4o Mini?
+- **Cost-effective** AI solution for chatbots
+- **Fast responses** with low latency
+- **Sufficient capability** for platform assistance
+- **OpenAI reliability** and uptime
 
-### **Project Documentation**
-- **[CLAUDE.md](CLAUDE.md)** - Comprehensive architecture and development patterns
-- **[business-context.md](resource-docs/business-context.md)** - Nonprofit domain knowledge
-- **[component-architecture.md](resource-docs/component-architecture.md)** - System design overview
-- **[testing-architecture.md](resource-docs/testing-architecture.md)** - Testing strategy and tools
+## 🤖 AI Integration & Responsible Use
 
-### **Learning Resources**
-- **[Next.js 16 Documentation](https://nextjs.org/docs)** - Framework fundamentals
-- **[Prisma Documentation](https://www.prisma.io/docs)** - Database ORM guide
-- **[React Hook Form](https://react-hook-form.com/)** - Advanced form patterns
-- **[Zod Documentation](https://zod.dev/)** - Schema validation
-- **[Tailwind CSS](https://tailwindcss.com/docs)** - Utility-first styling
+### AI-Powered Features
 
-### **Development Community**
-- **[Next.js Discord](https://discord.gg/bUG2bvbtHy)** - Framework community
-- **[Prisma Discord](https://pris.ly/discord)** - Database help and discussions
-- **[shadcn/ui GitHub](https://github.com/shadcn/ui)** - Component library issues
+**Intelligent Chatbot Assistant**
+- Powered by **OpenAI GPT-4o Mini** for natural language understanding
+- Provides context-aware guidance about platform features
+- Answers questions about donors, donations, campaigns, and workflows
+- Available to all authenticated users
 
-## 🚀 Deployment Options
+**Form Field Helpers** (Planned)
+- AI-assisted guidance for completing donor and donation forms
+- Context-aware suggestions based on field types
 
-### **Development Database**
-```bash
-# Local PostgreSQL (recommended for learning)
-brew install postgresql
-createdb donor_connect
+### Responsible AI Practices
 
-# Or use Docker
-docker run --name postgres -e POSTGRES_DB=donor_connect -p 5432:5432 -d postgres
-```
+We consider **bias, ethics, security, and data privacy** when building AI systems:
 
-### **Cloud Database (Production)**
-- **[Neon](https://neon.tech/)** - Serverless PostgreSQL (free tier)
-- **[Supabase](https://supabase.com/)** - Firebase alternative with PostgreSQL
-- **[PlanetScale](https://planetscale.com/)** - MySQL-compatible serverless database
+**🎯 Bias Mitigation**
+- Regular audits of AI outputs for fairness
+- Diverse team reviews of AI recommendations
+- Fair treatment across all donor demographics
 
-### **Application Deployment**
-- **[Vercel](https://vercel.com/)** - Next.js optimized (recommended)
-- **[Netlify](https://netlify.com/)** - JAMstack deployment
-- **[Railway](https://railway.app/)** - Full-stack deployment with database
+**⚖️ Ethical Design**
+- Human-in-the-loop: AI provides recommendations, staff make decisions
+- Transparent AI usage documented in AI Policy page
+- Clear boundaries on AI capabilities
 
-## 🔐 Environment Configuration
+**🔒 Security**
+- API keys stored in environment variables (never client-side)
+- All AI API calls encrypted in transit (HTTPS)
+- Audit logging for all AI interactions with timestamps and user context
+
+**🛡️ Data Privacy**
+- Data minimization: only necessary information sent to AI
+- No PII transmitted without explicit organizational consent
+- User data never used to train external AI models
+
+View our complete [AI Policy](/ai-policy) for detailed information.
+
+## � Environment Configuration
 
 Copy `.env.example` to `.env` and configure:
 
 ```env
-# Database URL for Prisma 7 with driver adapters
-DATABASE_URL="postgresql://USER:PASSWORD@HOST:PORT/DATABASE?schema=public&sslmode=disable"
+# Database URL for Prisma 7 with Neon PostgreSQL
+DATABASE_URL="postgresql://USER:PASSWORD@HOST:PORT/DATABASE?sslmode=require&channel_binding=require"
 
-# For production/Neon (with SSL):
-# DATABASE_URL="postgresql://USER:PASSWORD@HOST:PORT/DATABASE?schema=public&sslmode=require"
+# OpenAI API Key for Chatbot
+OPENAI_API_KEY="sk-proj-your-openai-api-key-here"
 
-# Application URLs
+# Application URLs (optional)
 NEXT_PUBLIC_APP_URL="http://localhost:3000"
-
-# Optional: Add email service config for future features
-# SENDGRID_API_KEY="your_sendgrid_key"
-# EMAIL_FROM="noreply@yournonprofit.org"
 ```
+
+### Security Notes
+- Never commit `.env` file to version control
+- Use different API keys for development and production
+- Rotate API keys regularly
+- Enable Neon SSL for production database connections
+
+## 📖 Additional Resources
+
+### **Project Documentation**
+- **[AI Policy Page](/ai-policy)** - Responsible AI usage documentation
+- **[Evidence Page](/evidence)** - Project rubric evidence
+- **[Reflection Page](/reflection)** - Development insights and lessons learned
+
+### **External Resources**
+- **[Next.js 16 Documentation](https://nextjs.org/docs)** - Framework fundamentals
+- **[Prisma Documentation](https://www.prisma.io/docs)** - Database ORM guide
+- **[OpenAI API Reference](https://platform.openai.com/docs)** - AI integration guide
+- **[Tailwind CSS](https://tailwindcss.com/docs)** - Utility-first styling
 
 ## 📄 License
 
-This educational project is released under the **ISC License** - feel free to use it for learning, teaching, or building your own nonprofit tools!
+This project is released under the **ISC License** for educational and nonprofit use.
 
 ---
 
-## 🎉 Ready to Start?
+## 🙏 Acknowledgments
 
-1. **Set up your development environment** (database, dependencies)
-2. **Explore the seed data** with `npx prisma studio`  
-3. **Start with authentication** - implement login/logout first
-4. **Build incrementally** - one feature at a time
-5. **Test frequently** - write tests as you build features
-6. **Ask questions** - use GitHub Issues for help
-
-**Happy coding! 🚀** Build something amazing for the nonprofit sector!
+Built with modern web technologies to help nonprofits improve donor retention and build lasting relationships with supporters.
